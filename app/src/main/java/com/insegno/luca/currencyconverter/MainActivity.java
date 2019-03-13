@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     public void convertiValuta (View view){
         Log.i("VALUTA", "funziona");
         try {
-            URL url = new URL("https://free.currencyconverterapi.com/api/v6/convert?q=EUR_USD&compact=ultra&apiKey=87784f8a93d46ca27ec5");
+            URL url = new URL("https://free.currencyconverterapi.com/api/v6/convert?q=EUR_USD&compact=ultra&apiKey=");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             BufferedReader buff = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String valoreDiRitorno = buff.readLine();
