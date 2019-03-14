@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +19,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.Buffer;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +31,43 @@ public class MainActivity extends AppCompatActivity {
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+    }
+
+
+    public void convertiValuta(View view) {
+
+        double fattoreDiCambio = 0;
+        try {
+            URL url = new URL("https://free.currencyconverterapi.com/api/v6/convert?q=EUR_USD&compact=ultra&apiKey=");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            BufferedReader buff = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            String valoreDiRitorno = buff.readLine();
+
+            JSONObject json = new JSONObject(valoreDiRitorno);
+
+            fattoreDiCambio = json.getDouble("EUR_USD");
+
+            buff.close();
+            conn.disconnect();
+
+        } catch (IOException | JSONException e) {
+            Log.e("HTTP", "Problemi nella connessione HTTP");
+            Log.e("HTTP", e.getMessage());
+        }
+
+
+        String importoStringa = ((EditText) findViewById(R.id.importo)).getText().toString();
+        double importo = Double.parseDouble(importoStringa);
+
+
+        double nuovoValore = importo * fattoreDiCambio;
+
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
+
+        ((TextView)findViewById(R.id.risultato)).setText(formatter.format(nuovoValore));
+
     }
 
 
