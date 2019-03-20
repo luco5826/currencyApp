@@ -38,8 +38,27 @@ public class MainActivity extends AppCompatActivity {
     public void convertiValuta(View view) {
 
         double fattoreDiCambio = 0;
+        String importoStringa = ((EditText) findViewById(R.id.importo)).getText().toString();
         String from = ((EditText) findViewById(R.id.from)).getText().toString();
         String to = ((EditText) findViewById(R.id.to)).getText().toString();
+
+        if (importoStringa.isEmpty()) {
+            Toast.makeText(MainActivity.this, "Inserire un importo!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (from.isEmpty() || to.isEmpty()) {
+            Toast.makeText(MainActivity.this, "Inserire una valuta!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        double importo = 0;
+        try{
+            importo = Double.parseDouble(importoStringa);
+        } catch (NumberFormatException e){
+            Toast.makeText(MainActivity.this, "Inserire un importo valido!!", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         try {
             URL url = new URL("https://free.currencyconverterapi.com/api/v6/convert?q=" + from + "_" + to + "&compact=ultra&apiKey=87784f8a93d46ca27ec5");
@@ -60,15 +79,11 @@ public class MainActivity extends AppCompatActivity {
             Log.e("CURRENCY", "Problemi nella connessione HTTP");
             Log.e("CURRENCY", e.getMessage());
             return;
-        } catch (JSONException e){
+        } catch (JSONException e) {
             Log.e("CURRENCY", "Errore nel parsing del file JSON");
             Toast.makeText(MainActivity.this, "Nessun valore restituito", Toast.LENGTH_LONG).show();
             return;
         }
-
-
-        String importoStringa = ((EditText) findViewById(R.id.importo)).getText().toString();
-        double importo = Double.parseDouble(importoStringa);
 
 
         double nuovoValore = importo * fattoreDiCambio;
