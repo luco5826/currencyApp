@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,8 +38,11 @@ public class MainActivity extends AppCompatActivity {
     public void convertiValuta(View view) {
 
         double fattoreDiCambio = 0;
+        String from = ((EditText) findViewById(R.id.from)).getText().toString();
+        String to = ((EditText) findViewById(R.id.to)).getText().toString();
+
         try {
-            URL url = new URL("https://free.currencyconverterapi.com/api/v6/convert?q=EUR_USD&compact=ultra&apiKey=");
+            URL url = new URL("https://free.currencyconverterapi.com/api/v6/convert?q=" + from + "_" + to + "&compact=ultra&apiKey=87784f8a93d46ca27ec5");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             BufferedReader buff = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -47,14 +51,19 @@ public class MainActivity extends AppCompatActivity {
 
             JSONObject json = new JSONObject(valoreDiRitorno);
 
-            fattoreDiCambio = json.getDouble("EUR_USD");
+            fattoreDiCambio = json.getDouble(from + "_" + to);
 
             buff.close();
             conn.disconnect();
 
-        } catch (IOException | JSONException e) {
-            Log.e("HTTP", "Problemi nella connessione HTTP");
-            Log.e("HTTP", e.getMessage());
+        } catch (IOException e) {
+            Log.e("CURRENCY", "Problemi nella connessione HTTP");
+            Log.e("CURRENCY", e.getMessage());
+            return;
+        } catch (JSONException e){
+            Log.e("CURRENCY", "Errore nel parsing del file JSON");
+            Toast.makeText(MainActivity.this, "Nessun valore restituito", Toast.LENGTH_LONG).show();
+            return;
         }
 
 
@@ -64,9 +73,9 @@ public class MainActivity extends AppCompatActivity {
 
         double nuovoValore = importo * fattoreDiCambio;
 
-        NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
+//        NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
 
-        ((TextView)findViewById(R.id.risultato)).setText(formatter.format(nuovoValore));
+        ((TextView) findViewById(R.id.risultato)).setText(String.valueOf(nuovoValore));
 
     }
 
